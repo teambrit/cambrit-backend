@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: cambridge
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      validation-timeout: 5000
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+openai:
+  api-key: ${OPENAI_API_KEY}
+
+jwt:
+  secret: ${JWT_SECRET}
+logging:
+  level:
+    root: INFO
+server:
+  port: ${PORT:5000}

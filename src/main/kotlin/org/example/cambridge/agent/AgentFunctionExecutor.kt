@@ -1,0 +1,156 @@
+package org.example.cambridge.agent
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.example.cambridge.billing.BillingService
+import org.example.cambridge.posting.PostingService
+import org.example.cambridge.user.UserService
+import org.springframework.data.domain.PageRequest
+import org.springframework.stereotype.Component
+
+@Component
+class AgentFunctionExecutor(
+    private val userService: UserService,
+    private val postingService: PostingService,
+    private val billingService: BillingService,
+    private val objectMapper: ObjectMapper
+) {
+    // 이미지 필드를 제거하는 헬퍼 함수
+    private fun removeImageFields(obj: Any): Any {
+        val jsonNode = objectMapper.valueToTree<com.fasterxml.jackson.databind.JsonNode>(obj)
+        removeImageFieldsRecursive(jsonNode)
+        return objectMapper.writeValueAsString(jsonNode)
+    }
+
+    private fun removeImageFieldsRecursive(node: com.fasterxml.jackson.databind.JsonNode) {
+        if (node.isObject) {
+            val objectNode = node as com.fasterxml.jackson.databind.node.ObjectNode
+            // 이미지 관련 필드 제거
+            objectNode.remove("profileImage")
+            objectNode.remove("logoImage")
+            objectNode.remove("backgroundImage")
+            objectNode.remove("verificationFile")
+            objectNode.remove("applicantProfileImage")
+
+            // 자식 노드들도 재귀적으로 처리
+            objectNode.fields().forEach { (_, value) ->
+                removeImageFieldsRecursive(value)
+            }
+        } else if (node.isArray) {
+            node.forEach { removeImageFieldsRecursive(it) }
+        }
+    }
+
+    fun executeFunction(functionName: String, argumentsJson: String, currentUserId: Long): String {
+        return try {
+            when (functionName) {
+                "get_user_info" -> {
+                    val args = objectMapper.readValue(argumentsJson, GetUserInfoArgs::class.java)
+                    val userId = args.userId ?: currentUserId
+                    val user = userService.getUserById(userId)
+                    removeImageFields(user) as String
+                }
+                "get_posting_list" -> {
+                    val args = objectMapper.readValue(argumentsJson, GetPostingListArgs::class.java)
+                    val page = args.page ?: 0
+                    val size = args.size ?: 20
+                    val posterId = args.posterId
+                    val postings = postingService.getPosterPage(PageRequest.of(page, size), posterId)
+                    removeImageFields(postings) as String
+                }
+                "get_posting_detail" -> {
+                    val args = objectMapper.readValue(argumentsJson, GetPostingDetailArgs::class.java)
+                    val posting = postingService.getDetail(args.postingId)
+                    if (posting == null) {
+                        objectMapper.writeValueAsString(mapOf("error" to "Posting not found"))
+                    } else {
+                        removeImageFields(posting) as String
+                    }
+                }
+                "get_my_applications" -> {
+                    val applications = postingService.getApplicationsByUserId(currentUserId)
+                    removeImageFields(applications) as String
+                }
+                "get_applications_for_posting" -> {
+                    val args = objectMapper.readValue(argumentsJson, GetApplicationsArgs::class.java)
+                    val applications = postingService.getApplicationsByPosting(args.postingId)
+                    removeImageFields(applications) as String
+                }
+                "get_billing_list" -> {
+                    val billings = billingService.getAllBillingsByCompany(currentUserId)
+                    removeImageFields(billings) as String
+                }
+                "get_billing_detail" -> {
+                    val args = objectMapper.readValue(argumentsJson, GetBillingDetailArgs::class.java)
+                    val billing = billingService.getBillingDetail(args.billingId, currentUserId)
+                    removeImageFields(billing) as String
+                }
+                "update_user_profile" -> {
+                    val args = objectMapper.readValue(argumentsJson, UpdateUserProfileArgs::class.java)
+                    userService.updateUserProfile(
+                        userId = currentUserId,
+                        name = args.name,
+                        phoneNumber = args.phoneNumber,
+                        description = args.description,
+                        profileImage = null // 이미지는 agent에서 수정 불가
+                    )
+                    objectMapper.writeValueAsString(mapOf("success" to true, "message" to "프로필이 업데이트되었습니다."))
+                }
+                "update_company_profile" -> {
+                    val args = objectMapper.readValue(argumentsJson, UpdateCompanyProfileArgs::class.java)
+                    userService.updateCompanyProfile(
+                        userId = currentUserId,
+                        name = args.name,
+                        companyCode = args.companyCode,
+                        companyUrl = args.companyUrl,
+                        description = args.description,
+                        logoImage = null,
+                        backgroundImage = null
+                    )
+                    objectMapper.writeValueAsString(mapOf("success" to true, "message" to "회사 프로필이 업데이트되었습니다."))
+                }
+                "create_posting" -> {
+                    val args = objectMapper.readValue(argumentsJson, CreatePostingArgs::class.java)
+                    val request = org.example.cambridge.posting.data.CreatePostingRequest(
+                        title = args.title,
+                        body = args.body,
+                        compensation = args.compensation,
+                        tags = args.tags?.split(",")?.map { it.trim() } ?: emptyList(),
+                        dueDate = null,
+                        activityStartDate = null,
+                        activityEndDate = null
+                    )
+                    val posting = postingService.createPosting(currentUserId, request)
+                    removeImageFields(posting) as String
+                }
+                "apply_to_posting" -> {
+                    val args = objectMapper.readValue(argumentsJson, ApplyToPostingArgs::class.java)
+                    postingService.applyToPosting(currentUserId, args.postingId)
+                    objectMapper.writeValueAsString(mapOf("success" to true, "message" to "공고에 지원했습니다."))
+                }
+                "update_application_status" -> {
+                    val args = objectMapper.readValue(argumentsJson, UpdateApplicationStatusArgs::class.java)
+                    val status = org.example.cambridge.posting.ApplicationStatus.valueOf(args.status)
+                    postingService.updateApplicationStatus(args.applicationId, status, currentUserId)
+                    objectMapper.writeValueAsString(mapOf("success" to true, "message" to "지원 상태가 변경되었습니다."))
+                }
+                else -> {
+                    objectMapper.writeValueAsString(mapOf("error" to "Unknown function: $functionName"))
+                }
+            }
+        } catch (e: Exception) {
+            objectMapper.writeValueAsString(mapOf("error" to e.message))
+        }
+    }
+}
+
+// Argument classes
+data class GetUserInfoArgs(val userId: Long?)
+data class GetPostingListArgs(val page: Int?, val size: Int?, val posterId: Long?)
+data class GetPostingDetailArgs(val postingId: Long)
+data class GetApplicationsArgs(val postingId: Long)
+data class GetBillingDetailArgs(val billingId: Long)
+data class UpdateUserProfileArgs(val name: String, val phoneNumber: String?, val description: String?)
+data class UpdateCompanyProfileArgs(val name: String, val companyCode: String?, val companyUrl: String?, val description: String?)
+data class CreatePostingArgs(val title: String, val body: String, val compensation: Long, val tags: String?)
+data class ApplyToPostingArgs(val postingId: Long)
+data class UpdateApplicationStatusArgs(val applicationId: Long, val status: String)
