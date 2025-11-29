@@ -78,7 +78,17 @@ object AgentTools {
         Tool(
             function = FunctionDefinition(
                 name = "get_posting_list",
-                description = "게시물 목록을 조회합니다. 페이지네이션을 지원하며, 특정 기업의 게시물만 필터링할 수 있습니다.",
+                description = """게시물 목록을 조회합니다.
+
+이 함수는 전체 공고 목록을 반환합니다. 사용자가 특정 조건(기업명, 공고 제목, 보상액 등)으로 필터링을 요청하면:
+1. 이 함수로 전체 목록을 먼저 조회하세요
+2. 반환된 결과에서 조건에 맞는 항목들을 찾으세요
+3. 조건에 맞는 항목의 개수와 간단한 설명만 사용자에게 알려주세요
+
+예시:
+- "삼성 공고 보여줘" → 전체 조회 후 posterName에 "삼성"이 포함된 항목 필터링
+- "보상금 100만원 이상" → 전체 조회 후 compensation >= 1000000 항목 필터링
+- "개발 관련 공고" → 전체 조회 후 title이나 tags에 "개발" 포함된 항목 필터링""",
                 parameters = FunctionParameter(
                     type = "object",
                     properties = mapOf(
@@ -88,7 +98,7 @@ object AgentTools {
                         ),
                         "size" to PropertyDefinition(
                             type = "number",
-                            description = "페이지 크기 (기본값: 20)"
+                            description = "페이지 크기 (기본값: 20, 필터링 시에는 50-100 권장)"
                         ),
                         "posterId" to PropertyDefinition(
                             type = "number",
