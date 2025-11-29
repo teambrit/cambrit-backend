@@ -7,7 +7,7 @@ data class CreatePostingRequest (
     val body: String,
     val compensation: Long,
     val tags: List<String>,
-    val dueDate: LocalDate?,
+    val applyDueDate: LocalDate?,
     val activityStartDate: LocalDate?,
     val activityEndDate: LocalDate?,
 )

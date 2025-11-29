@@ -37,7 +37,7 @@ class PostingService(
             compensation = postingRequest.compensation,
             tags = postingRequest.tags.toString(),
             status = PostingStatus.ACTIVE,
-            applyDueDate = postingRequest.dueDate,
+            applyDueDate = postingRequest.applyDueDate,
             activityStartDate = postingRequest.activityStartDate,
             activityEndDate = postingRequest.activityEndDate,
         )
