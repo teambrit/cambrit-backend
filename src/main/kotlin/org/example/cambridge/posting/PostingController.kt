@@ -71,7 +71,9 @@ class PostingController(
         @PathVariable postingId: Long,
         @RequestHeader("Authorization") token: String
     ): ResponseEntity<List<ApplicationSummary>> {
-        val res = postingService.getApplicationsByPosting(postingId)
+        val userId = jwtUtils.validateAndGetSubject(token.removePrefix("Bearer "))?.toLong()
+            ?: return ResponseEntity.status(401).build()
+        val res = postingService.getApplicationsByPosting(postingId, userId)
         return ResponseEntity.ok(res)
     }
 

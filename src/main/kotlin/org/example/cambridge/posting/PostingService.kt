@@ -118,8 +118,13 @@ class PostingService(
         applicationRepository.save(application)
     }
 
-    fun getApplicationsByPosting(postingId: Long): List<ApplicationSummary> {
+    fun getApplicationsByPosting(postingId: Long, userId: Long): List<ApplicationSummary> {
         val posting = postingRepository.findByIdOrNull(postingId) ?: throw IllegalArgumentException("No posting with id $postingId")
+
+        if (posting.posterId != userId) {
+            throw IllegalArgumentException("User with id $userId is not the poster of posting with id ${posting.id}")
+        }
+
         val applications = applicationRepository.findAllByPostingId(postingId)
         val applicantIds = applications.map { it.applicantId }
         val applicants = userRepository.findAllById(applicantIds).associateBy { it.id }
