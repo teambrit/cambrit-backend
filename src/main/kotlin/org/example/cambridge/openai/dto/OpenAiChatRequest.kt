@@ -23,5 +23,7 @@ data class OpenAiChatRequest(
     val maxTokens: Int = 1000,
     val tools: List<Tool>? = null,
     @JsonProperty("tool_choice")
-    val toolChoice: String? = null
+    val toolChoice: String? = null,
+    @JsonProperty("parallel_tool_calls")
+    val parallelToolCalls: Boolean? = null
 )

@@ -121,8 +121,8 @@ class AgentService(
                 messages = messages,
                 tools = AgentTools.tools,
                 toolChoice = "auto",
-                temperature = 0.7,
-                maxTokens = 2000
+                maxTokens = 2000,
+                parallelToolCalls = false
             )
 
             val response = openAiService.createChatCompletion(request)
