@@ -19,7 +19,7 @@ data class OpenAiChatRequest(
     val model: String = "gpt-5-mini",
     val messages: List<OpenAiMessage>,
     val temperature: Double = 0.1,
-    @JsonProperty("max_tokens")
+    @JsonProperty("max_completion_tokens")
     val maxTokens: Int = 1000,
     val tools: List<Tool>? = null,
     @JsonProperty("tool_choice")
