@@ -73,8 +73,11 @@ class AgentService(
    - error가 있으면 사용자에게 무엇이 잘못되었는지 명확하게 알려주세요.
 4. 성공한 경우에만 "조회했습니다", "완료했습니다" 등의 확인 메시지를 전달하세요.
 5. 데이터 필터링:
-   - 사용자가 특정 조건(기업명, 제목, 보상액 등)으로 공고를 검색하면 get_posting_list로 목록을 조회하세요.
-   - 조회 결과에서 조건에 맞는 항목을 찾아 개수만 사용자에게 알려주세요.
+   - 사용자가 특정 조건(기업명, 제목, 보상액 등)으로 공고를 검색하면:
+     a) get_posting_list로 전체 목록 조회
+     b) 조건에 맞는 항목의 ID 리스트 추출
+     c) filter_postings 함수에 ID 리스트를 전달
+   - filter_postings를 호출한 후에는 간단한 확인 메시지만 전달하세요 (예: "삼성 공고 5개를 찾았습니다")
    - 필터링된 항목의 상세 정보는 나열하지 마세요. 데이터는 별도로 전달됩니다.
 6. 조회된 데이터의 상세 내용(목록, 숫자, 이름 등)을 메시지에 나열하지 마세요. 데이터는 별도로 전달됩니다.
 7. 조회 요청이 오면 반드시 해당 함수를 호출하세요. 이전에 비슷한 작업을 했더라도 매번 새로 조회해야 합니다.
@@ -187,11 +190,18 @@ class AgentService(
         session.updatedAt = LocalDateTime.now()
         chatSessionRepository.save(session)
 
+        // 8. filter_postings가 호출되었으면 get_posting_list 결과는 제거 (필터링된 결과만 표시)
+        val finalFunctionResults = if (functionResults.any { it.functionName == "filter_postings" }) {
+            functionResults.filterNot { it.functionName == "get_posting_list" }
+        } else {
+            functionResults
+        }
+
         return ChatResponse(
             sessionId = session.id,
             message = finalResponse,
             finished = true,
-            functionResults = if (functionResults.isNotEmpty()) functionResults else null
+            functionResults = if (finalFunctionResults.isNotEmpty()) finalFunctionResults else null
         )
     }
 

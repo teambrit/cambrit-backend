@@ -13,7 +13,8 @@ data class FunctionParameter(
 data class PropertyDefinition(
     val type: String,
     val description: String,
-    val enum: List<String>? = null
+    val enum: List<String>? = null,
+    val items: Map<String, Any>? = null
 )
 
 data class FunctionDefinition(

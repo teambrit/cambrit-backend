@@ -66,6 +66,13 @@ class AgentFunctionExecutor(
                         removeImageFields(posting) as String
                     }
                 }
+                "filter_postings" -> {
+                    val args = objectMapper.readValue(argumentsJson, FilterPostingsArgs::class.java)
+                    val postings = args.postingIds.mapNotNull { id ->
+                        postingService.getDetail(id)
+                    }
+                    removeImageFields(postings) as String
+                }
                 "get_my_applications" -> {
                     val applications = postingService.getApplicationsByUserId(currentUserId)
                     removeImageFields(applications) as String
@@ -154,6 +161,7 @@ class AgentFunctionExecutor(
 data class GetUserInfoArgs(val userId: Long?)
 data class GetPostingListArgs(val page: Int?, val size: Int?, val posterId: Long?)
 data class GetPostingDetailArgs(val postingId: Long)
+data class FilterPostingsArgs(val postingIds: List<Long>)
 data class GetApplicationsArgs(val postingId: Long)
 data class GetBillingDetailArgs(val billingId: Long)
 data class UpdateUserProfileArgs(val name: String, val phoneNumber: String?, val description: String?)
