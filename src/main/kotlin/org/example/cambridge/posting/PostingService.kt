@@ -36,7 +36,10 @@ class PostingService(
             posterId = posterId,
             compensation = postingRequest.compensation,
             tags = postingRequest.tags.toString(),
-            status = PostingStatus.ACTIVE
+            status = PostingStatus.ACTIVE,
+            applyDueDate = postingRequest.dueDate,
+            activityStartDate = postingRequest.activityStartDate,
+            activityEndDate = postingRequest.activityEndDate,
         )
         val savedPosting = postingRepository.save(posting)
 
