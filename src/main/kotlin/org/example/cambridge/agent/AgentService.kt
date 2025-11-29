@@ -77,7 +77,7 @@ class AgentService(
      a) get_posting_list로 전체 목록 조회
      b) 조건에 맞는 항목의 ID 리스트 추출
      c) 조건에 맞는 항목이 있는 경우에만 filter_postings 함수에 ID 리스트를 전달
-   - 중요: 조건에 맞는 항목이 없으면 filter_postings를 호출하지 마세요. "조건에 맞는 공고가 없습니다"라고 사용자에게 알려주세요.
+   - 중요: 조건에 맞는 항목이 없으면 filter_postings를 호출하지 마세요. 예를 들어 title이나 posterName에 삼성전자가 들어간 공고가 없는데 "삼성전자 공고 알려줘"라고 하면 filter_postings을 호출하면 안 됩니다. "조건에 맞는 공고가 없습니다"라고 사용자에게 알려주세요. 
    - 중요: 전체 목록이나 빈 배열을 filter_postings에 전달하지 마세요. 반드시 조건에 맞는 항목만 전달하세요.
    - filter_postings를 호출한 후에는 간단한 확인 메시지만 전달하세요 (예: "삼성 공고 5개를 찾았습니다")
    - 필터링된 항목의 상세 정보는 나열하지 마세요. 데이터는 별도로 전달됩니다.
@@ -117,7 +117,7 @@ class AgentService(
             maxIterations--
 
             val request = OpenAiChatRequest(
-                model = "gpt-4o-mini",
+                model = "gpt-5-mini",
                 messages = messages,
                 tools = AgentTools.tools,
                 toolChoice = "auto",

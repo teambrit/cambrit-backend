@@ -135,7 +135,7 @@ get_posting_list로 조회한 후 조건에 맞는 항목을 찾았다면, 해�
 
 사용 순서:
 1. get_posting_list로 전체 목록 조회
-2. 조건에 맞는 항목의 ID 리스트 추출
+2. 조건에 맞는 항목의 ID 리스트 추출 
 3. filter_postings에 ID 리스트를 전달""",
                 parameters = FunctionParameter(
                     type = "object",
