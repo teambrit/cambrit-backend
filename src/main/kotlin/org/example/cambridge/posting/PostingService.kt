@@ -23,7 +23,8 @@ class PostingService(
     private val userRepository: UserRepository,
     private val applicationRepository: ApplicationRepository,
     private val studentAuthorizationRequestRepository: org.example.cambridge.user.StudentAuthorizationRequestRepository,
-    private val billingRepository: org.example.cambridge.billing.BillingRepository
+    private val billingRepository: org.example.cambridge.billing.BillingRepository,
+    private val emailService: org.example.cambridge.email.EmailService
 ) {
     fun createPosting(posterId: Long, postingRequest: CreatePostingRequest): PostingDetail {
         val poster = userRepository.findByIdOrNull(posterId) ?: throw IllegalArgumentException("No user with id $posterId")
@@ -119,6 +120,31 @@ class PostingService(
         )
 
         applicationRepository.save(application)
+
+        // 기업에게 지원 알림 이메일 전송
+        try {
+            val poster = userRepository.findByIdOrNull(posting.posterId)
+                ?: throw IllegalArgumentException("No user with id ${posting.posterId}")
+
+            val authRequest = studentAuthorizationRequestRepository.findAll()
+                .filter { it.userId == userId }
+                .maxByOrNull { it.createdAt }
+
+            emailService.sendApplicationNotification(
+                companyEmail = poster.email,
+                companyName = poster.name,
+                postingTitle = posting.title,
+                applicantName = applicant.name,
+                applicantEmail = applicant.email,
+                university = authRequest?.university ?: "미인증",
+                major = authRequest?.major ?: "미인증",
+                appliedAt = LocalDateTime.now(),
+                managementLink = "http://campus-bridge.s3-website.ap-northeast-2.amazonaws.com/company/activity/management/${posting.id}"
+            )
+        } catch (e: Exception) {
+            // 이메일 전송 실패해도 지원은 성공으로 처리
+            println("Failed to send application notification email: ${e.message}")
+        }
     }
 
     fun getApplicationsByPosting(postingId: Long, userId: Long): List<ApplicationSummary> {
@@ -197,6 +223,32 @@ class PostingService(
         application.status = newStatus
         application.lastModifiedAt = LocalDateTime.now()
         applicationRepository.save(application)
+
+        // APPROVED 상태로 변경되면 학생에게 선발 축하 이메일 전송
+        if (newStatus == ApplicationStatus.APPROVED) {
+            try {
+                val applicant = userRepository.findByIdOrNull(application.applicantId)
+                    ?: throw IllegalArgumentException("No user with id ${application.applicantId}")
+
+                val poster = userRepository.findByIdOrNull(posting.posterId)
+                    ?: throw IllegalArgumentException("No user with id ${posting.posterId}")
+
+                emailService.sendSelectionNotification(
+                    applicantEmail = applicant.email,
+                    applicantName = applicant.name,
+                    postingTitle = posting.title,
+                    companyName = poster.name,
+                    compensation = posting.compensation,
+                    activityStartDate = posting.activityStartDate?.atStartOfDay(),
+                    activityEndDate = posting.activityEndDate?.atStartOfDay(),
+                    detailLink = "http://campus-bridge.s3-website.ap-northeast-2.amazonaws.com/activity/${posting.id}",
+                    applicationsLink = "http://campus-bridge.s3-website.ap-northeast-2.amazonaws.com/applications"
+                )
+            } catch (e: Exception) {
+                // 이메일 전송 실패해도 상태 변경은 성공으로 처리
+                println("Failed to send selection notification email: ${e.message}")
+            }
+        }
     }
 
     @Transactional
@@ -215,6 +267,37 @@ class PostingService(
         application.verificationFile = fileBytes
         application.lastModifiedAt = LocalDateTime.now()
         applicationRepository.save(application)
+
+        // 기업에게 인증 파일 업로드 알림 이메일 전송
+        try {
+            val posting = postingRepository.findByIdOrNull(application.postingId)
+                ?: throw IllegalArgumentException("No posting with id ${application.postingId}")
+
+            val poster = userRepository.findByIdOrNull(posting.posterId)
+                ?: throw IllegalArgumentException("No user with id ${posting.posterId}")
+
+            val applicant = userRepository.findByIdOrNull(application.applicantId)
+                ?: throw IllegalArgumentException("No user with id ${application.applicantId}")
+
+            val authRequest = studentAuthorizationRequestRepository.findAll()
+                .filter { it.userId == applicant.id }
+                .maxByOrNull { it.createdAt }
+
+            emailService.sendVerificationNotification(
+                companyEmail = poster.email,
+                companyName = poster.name,
+                postingTitle = posting.title,
+                applicantName = applicant.name,
+                university = authRequest?.university ?: "미인증",
+                major = authRequest?.major ?: "미인증",
+                compensation = posting.compensation,
+                uploadedAt = LocalDateTime.now(),
+                managementLink = "http://campus-bridge.s3-website.ap-northeast-2.amazonaws.com/company/activity/management/${posting.id}"
+            )
+        } catch (e: Exception) {
+            // 이메일 전송 실패해도 파일 업로드는 성공으로 처리
+            println("Failed to send verification notification email: ${e.message}")
+        }
 
         if(application.billingId != null){
             return // 이미 빌링처리되었다면 리턴

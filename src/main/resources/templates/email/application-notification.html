@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>새로운 지원자 알림</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background-color: #f3f4f6;
+            padding: 20px;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+        .message {
+            font-size: 16px;
+            color: #4b5563;
+            margin-bottom: 30px;
+        }
+        .info-box {
+            background: #f9fafb;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .info-box h3 {
+            font-size: 16px;
+            color: #1f2937;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .info-item {
+            display: flex;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #6b7280;
+            min-width: 100px;
+            font-size: 14px;
+        }
+        .info-value {
+            color: #1f2937;
+            font-size: 14px;
+        }
+        .cta-section {
+            text-align: center;
+            margin: 35px 0;
+        }
+        .button {
+            display: inline-block;
+            background: #3b82f6;
+            color: white !important;
+            padding: 14px 32px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #2563eb;
+        }
+        .divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 30px 0;
+        }
+        .footer {
+            background: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+            border-top: 1px solid #e5e7eb;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .footer-link {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎓 Cambrit</h1>
+            <p>Campus Recruitment Platform</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- [변수] ${companyName} -->
+            <p class="greeting">안녕하세요, <strong th:text="${companyName}">{{기업명}}</strong>님</p>
+
+            <!-- [변수] ${postingTitle} -->
+            <p class="message">
+                <strong th:text="${postingTitle}">{{활동명}}</strong>에 새로운 지원자가 지원했습니다.
+            </p>
+
+            <!-- 지원 정보 -->
+            <div class="info-box">
+                <h3>📋 지원 정보</h3>
+                <!-- [변수] ${postingTitle} -->
+                <div class="info-item">
+                    <span class="info-label">활동명</span>
+                    <span class="info-value" th:text="${postingTitle}">{{활동명}}</span>
+                </div>
+                <!-- [변수] ${applicantName} -->
+                <div class="info-item">
+                    <span class="info-label">지원자</span>
+                    <span class="info-value" th:text="${applicantName}">{{지원자 이름}}</span>
+                </div>
+                <!-- [변수] ${applicantEmail} -->
+                <div class="info-item">
+                    <span class="info-label">이메일</span>
+                    <span class="info-value" th:text="${applicantEmail}">{{이메일}}</span>
+                </div>
+                <!-- [변수] ${university} -->
+                <div class="info-item">
+                    <span class="info-label">대학교</span>
+                    <span class="info-value" th:text="${university}">{{대학교}}</span>
+                </div>
+                <!-- [변수] ${major} -->
+                <div class="info-item">
+                    <span class="info-label">전공</span>
+                    <span class="info-value" th:text="${major}">{{전공}}</span>
+                </div>
+                <!-- [변수] ${appliedAt} -->
+                <div class="info-item">
+                    <span class="info-label">지원일시</span>
+                    <span class="info-value" th:text="${appliedAt}">{{2024-01-01 12:00}}</span>
+                </div>
+            </div>
+
+            <p class="message">
+                지원자 정보를 확인하고 선발 여부를 결정해주세요.
+            </p>
+
+            <!-- CTA Button -->
+            <!-- [변수] ${managementLink} -->
+            <div class="cta-section">
+                <a th:href="${managementLink}" class="button">
+                    지원자 정보 확인하기 →
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Cambrit Team</strong></p>
+            <!-- [변수] ${currentYear} - 현재 연도 -->
+            <p>© <span th:text="${currentYear}">2025</span> Cambrit. All rights reserved.</p>
+            <p style="margin-top: 15px; font-size: 13px;">
+                이 메일은 발신 전용입니다. 문의사항은
+                <a href="mailto:cambritservice@gmail.com" class="footer-link">cambritservice@gmail.com</a>으로 연락주세요.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

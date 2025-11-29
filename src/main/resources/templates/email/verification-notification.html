@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인증 파일 업로드 알림</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background-color: #f3f4f6;
+            padding: 20px;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+        .message {
+            font-size: 16px;
+            color: #4b5563;
+            margin-bottom: 30px;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .highlight-box h2 {
+            font-size: 18px;
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+        .highlight-box p {
+            font-size: 14px;
+            color: #78350f;
+        }
+        .info-box {
+            background: #f9fafb;
+            border-left: 4px solid #7c3aed;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .info-box h3 {
+            font-size: 16px;
+            color: #1f2937;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .info-item {
+            display: flex;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #6b7280;
+            min-width: 120px;
+            font-size: 14px;
+        }
+        .info-value {
+            color: #1f2937;
+            font-size: 14px;
+        }
+        .compensation {
+            color: #7c3aed;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .steps {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .steps h3 {
+            font-size: 16px;
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+        .steps ol {
+            margin-left: 20px;
+        }
+        .steps li {
+            font-size: 14px;
+            color: #4b5563;
+            margin: 8px 0;
+        }
+        .warning-box {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .warning-box p {
+            font-size: 14px;
+            color: #991b1b;
+        }
+        .cta-section {
+            text-align: center;
+            margin: 35px 0;
+        }
+        .button {
+            display: inline-block;
+            background: #7c3aed;
+            color: white !important;
+            padding: 14px 32px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #6d28d9;
+        }
+        .footer {
+            background: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+            border-top: 1px solid #e5e7eb;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .footer-link {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📎 인증 파일 업로드</h1>
+            <p>확인이 필요합니다</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <p class="greeting">안녕하세요, <strong th:text="${companyName}">기업명</strong>님</p>
+
+            <p class="message">
+                <strong th:text="${applicantName}">학생명</strong>님이
+                <strong th:text="${postingTitle}">활동명</strong> 활동 인증 파일을 업로드했습니다.
+            </p>
+
+            <!-- 강조 박스 -->
+            <div class="highlight-box">
+                <h2>⏰ 인증 확인 대기 중</h2>
+                <p>인증 파일을 확인하고 보상금 지급을 진행해주세요</p>
+            </div>
+
+            <!-- 인증 정보 -->
+            <div class="info-box">
+                <h3>📎 인증 정보</h3>
+                <div class="info-item">
+                    <span class="info-label">활동명</span>
+                    <span class="info-value" th:text="${postingTitle}">활동명</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">학생</span>
+                    <span class="info-value">
+                        <span th:text="${applicantName}">학생명</span>
+                        (<span th:text="${university}">대학교</span>
+                        <span th:text="${major}">전공</span>)
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">업로드 일시</span>
+                    <span class="info-value" th:text="${uploadedAt}">2024-01-01 12:00</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">보상금</span>
+                    <span class="info-value compensation" th:text="${compensation} + '원'">100,000원</span>
+                </div>
+            </div>
+
+            <!-- 다음 단계 -->
+            <div class="steps">
+                <h3>📌 다음 단계</h3>
+                <ol>
+                    <li>인증 파일을 확인해주세요</li>
+                    <li>활동이 정상적으로 완료되었는지 검토해주세요</li>
+                    <li>확인 완료 후 학생에게 보상금을 지급해주세요</li>
+                    <li>지급 완료 시 자동으로 청구서가 발행됩니다</li>
+                </ol>
+            </div>
+
+            <!-- 경고 -->
+            <div class="warning-box">
+                <p>
+                    ⚠️ <strong>중요:</strong>
+                    인증 파일을 확인하고 활동이 완료되었다면 즉시 보상금을 지급해주세요.
+                    지급이 지연되면 학생의 신뢰도에 영향을 줄 수 있습니다.
+                </p>
+            </div>
+
+            <!-- CTA Button -->
+            <div class="cta-section">
+                <a th:href="${managementLink}" class="button">
+                    인증 파일 확인하기 →
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Cambrit Team</strong></p>
+            <!-- [변수] ${currentYear} - 현재 연도 -->
+            <p>© <span th:text="${currentYear}">2025</span> Cambrit. All rights reserved.</p>
+            <p style="margin-top: 15px; font-size: 13px;">
+                이 메일은 발신 전용입니다. 문의사항은
+                <a href="mailto:cambritservice@gmail.com" class="footer-link">cambritservice@gmail.com</a>으로 연락주세요.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
