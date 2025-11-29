@@ -129,7 +129,7 @@ class AgentFunctionExecutor(
                         body = args.body,
                         compensation = args.compensation,
                         tags = args.tags?.split(",")?.map { it.trim() } ?: emptyList(),
-                        dueDate = null,
+                        applyDueDate = null,
                         activityStartDate = null,
                         activityEndDate = null
                     )
