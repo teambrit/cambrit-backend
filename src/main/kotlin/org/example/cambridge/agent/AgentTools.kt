@@ -128,6 +128,26 @@ object AgentTools {
         ),
         Tool(
             function = FunctionDefinition(
+                name = "get_my_postings",
+                description = "현재 로그인한 기업이 등록한 공고 목록을 조회합니다. (기업 전용)",
+                parameters = FunctionParameter(
+                    type = "object",
+                    properties = mapOf(
+                        "page" to PropertyDefinition(
+                            type = "number",
+                            description = "페이지 번호 (0부터 시작, 기본값: 0)"
+                        ),
+                        "size" to PropertyDefinition(
+                            type = "number",
+                            description = "페이지 크기 (기본값: 20)"
+                        )
+                    ),
+                    required = emptyList()
+                )
+            )
+        ),
+        Tool(
+            function = FunctionDefinition(
                 name = "get_applications_for_posting",
                 description = "특정 게시물에 대한 지원자 목록을 조회합니다. (기업 전용)",
                 parameters = FunctionParameter(

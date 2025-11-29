@@ -70,6 +70,13 @@ class AgentFunctionExecutor(
                     val applications = postingService.getApplicationsByUserId(currentUserId)
                     removeImageFields(applications) as String
                 }
+                "get_my_postings" -> {
+                    val args = objectMapper.readValue(argumentsJson, GetPostingListArgs::class.java)
+                    val page = args.page ?: 0
+                    val size = args.size ?: 20
+                    val postings = postingService.getPosterPage(PageRequest.of(page, size), currentUserId)
+                    removeImageFields(postings) as String
+                }
                 "get_applications_for_posting" -> {
                     val args = objectMapper.readValue(argumentsJson, GetApplicationsArgs::class.java)
                     val applications = postingService.getApplicationsByPosting(args.postingId, currentUserId)
