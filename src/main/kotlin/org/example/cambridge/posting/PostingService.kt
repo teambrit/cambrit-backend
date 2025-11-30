@@ -268,6 +268,31 @@ class PostingService(
         }
     }
 
+    fun checkApplicationStatus(postingId: Long, userId: Long): ApplicationDetail? {
+        val application = applicationRepository.findByPostingIdAndApplicantId(postingId, userId)
+            ?: return null
+
+        val user = userRepository.findByIdOrNull(userId)
+            ?: throw IllegalArgumentException("No user with id $userId")
+
+        val posting = postingRepository.findByIdOrNull(postingId)
+            ?: throw IllegalArgumentException("No posting with id $postingId")
+
+        return ApplicationDetail(
+            id = application.id!!,
+            applicantId = user.id,
+            applicantName = user.name,
+            applicantEmail = user.email,
+            postingId = posting.id,
+            status = application.status,
+            createdAt = application.createdAt,
+            postingTitle = posting.title,
+            postingTags = posting.tags?.split(",")?.map { it.trim().removePrefix("[").removeSuffix("]") } ?: emptyList(),
+            posterName = userRepository.findByIdOrNull(posting.posterId)?.name ?: "Unknown",
+            verificationFile = application.verificationFile?.let { Base64.getEncoder().encodeToString(it) },
+        )
+    }
+
     @Transactional
     fun updateApplicationStatus(applicationId: Long, newStatus: ApplicationStatus, userId: Long) {
         val application = applicationRepository.findByIdOrNull(applicationId)

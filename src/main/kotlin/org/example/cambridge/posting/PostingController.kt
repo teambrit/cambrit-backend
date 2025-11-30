@@ -112,6 +112,19 @@ class PostingController(
         return ResponseEntity.ok(res)
     }
 
+    @GetMapping("/{postingId}/application-status")
+    @Operation(summary = "특정 공고 지원 여부 조회", description = "현재 사용자가 특정 공고에 지원했는지 확인합니다. 지원하지 않았으면 204 No Content를 반환합니다.")
+    fun checkApplicationStatus(
+        @PathVariable postingId: Long,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<ApplicationDetail> {
+        val userId = jwtUtils.validateAndGetSubject(token.removePrefix("Bearer "))?.toLong()
+            ?: return ResponseEntity.status(401).build()
+        val res = postingService.checkApplicationStatus(postingId, userId)
+            ?: return ResponseEntity.status(204).build()
+        return ResponseEntity.ok(res)
+    }
+
     @PutMapping("/applications/{applicationId}/status")
     @Operation(summary = "지원 상태 변경 (포스팅 작성자용)", description = "포스팅 작성자가 지원자의 상태를 변경합니다.")
     fun updateApplicationStatus(
