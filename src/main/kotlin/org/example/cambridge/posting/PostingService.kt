@@ -26,7 +26,7 @@ class PostingService(
     private val billingRepository: org.example.cambridge.billing.BillingRepository,
     private val emailService: org.example.cambridge.email.EmailService
 ) {
-    fun createPosting(posterId: Long, postingRequest: CreatePostingRequest): PostingDetail {
+    fun createPosting(posterId: Long, postingRequest: CreatePostingRequest, fileBytes: ByteArray? = null): PostingDetail {
         val poster = userRepository.findByIdOrNull(posterId) ?: throw IllegalArgumentException("No user with id $posterId")
         if(poster.role != UserRole.COMPANY){
             throw IllegalArgumentException("User with id $posterId is not a company")
@@ -41,6 +41,7 @@ class PostingService(
             applyDueDate = postingRequest.applyDueDate,
             activityStartDate = postingRequest.activityStartDate,
             activityEndDate = postingRequest.activityEndDate,
+            file = fileBytes
         )
         val savedPosting = postingRepository.save(posting)
 
@@ -65,7 +66,7 @@ class PostingService(
     }
 
     @Transactional
-    fun updatePosting(postingId: Long, userId: Long, postingRequest: CreatePostingRequest): PostingDetail {
+    fun updatePosting(postingId: Long, userId: Long, postingRequest: CreatePostingRequest, fileBytes: ByteArray? = null): PostingDetail {
         val posting = postingRepository.findByIdOrNull(postingId)
             ?: throw IllegalArgumentException("No posting with id $postingId")
 
@@ -81,6 +82,11 @@ class PostingService(
         posting.activityStartDate = postingRequest.activityStartDate
         posting.activityEndDate = postingRequest.activityEndDate
         posting.lastModifiedAt = LocalDateTime.now()
+
+        // 파일이 제공되면 업데이트
+        if (fileBytes != null) {
+            posting.file = fileBytes
+        }
 
         val savedPosting = postingRepository.save(posting)
 

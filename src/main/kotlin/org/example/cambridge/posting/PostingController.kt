@@ -20,28 +20,30 @@ class PostingController(
     private val postingService: PostingService,
     private val jwtUtils: JwtUtil
 ) {
-    @PostMapping("")
+    @PostMapping("", consumes = ["multipart/form-data"])
     @Operation(summary = "공고 생성", description = "새로운 공고를 생성합니다.")
     fun createPosting(
-        @RequestBody request: CreatePostingRequest,
+        @RequestPart("data") request: CreatePostingRequest,
+        @RequestPart("file", required = false) file: MultipartFile?,
         @RequestHeader("Authorization") token: String
     ): ResponseEntity<PostingDetail>{
         val userId = jwtUtils.validateAndGetSubject(token.removePrefix("Bearer "))?.toLong()
             ?: return ResponseEntity.status(401).build()
-        val res = postingService.createPosting(userId,request)
+        val res = postingService.createPosting(userId, request, file?.bytes)
         return ResponseEntity.status(201).body(res)
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}", consumes = ["multipart/form-data"])
     @Operation(summary = "공고 수정", description = "자신이 작성한 공고를 수정합니다.")
     fun updatePosting(
         @PathVariable id: Long,
-        @RequestBody request: CreatePostingRequest,
+        @RequestPart("data") request: CreatePostingRequest,
+        @RequestPart("file", required = false) file: MultipartFile?,
         @RequestHeader("Authorization") token: String
     ): ResponseEntity<PostingDetail> {
         val userId = jwtUtils.validateAndGetSubject(token.removePrefix("Bearer "))?.toLong()
             ?: return ResponseEntity.status(401).build()
-        val res = postingService.updatePosting(id, userId, request)
+        val res = postingService.updatePosting(id, userId, request, file?.bytes)
         return ResponseEntity.ok(res)
     }
 
