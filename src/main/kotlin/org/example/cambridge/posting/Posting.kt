@@ -41,5 +41,9 @@ class Posting(
     var applyDueDate: LocalDate? = null,
     var activityStartDate: LocalDate? = null,
     var activityEndDate: LocalDate? = null,
-    var tags: String? = null
+    var tags: String? = null,
+
+    @Lob
+    @Column(columnDefinition = "LONGBLOB", nullable = true)
+    var file: ByteArray? = null
 )

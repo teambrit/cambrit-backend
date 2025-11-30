@@ -59,7 +59,8 @@ class PostingService(
             applyDueDate = savedPosting.applyDueDate,
             activityStartDate = savedPosting.activityStartDate,
             activityEndDate = savedPosting.activityEndDate,
-            logoImage = poster.logoImage?.let {  Base64.getEncoder().encodeToString(it )}
+            logoImage = poster.logoImage?.let {  Base64.getEncoder().encodeToString(it )},
+            file = savedPosting.file?.let { Base64.getEncoder().encodeToString(it) }
         )
     }
 
@@ -101,7 +102,8 @@ class PostingService(
             applyDueDate = savedPosting.applyDueDate,
             activityStartDate = savedPosting.activityStartDate,
             activityEndDate = savedPosting.activityEndDate,
-            logoImage = poster.logoImage?.let {  Base64.getEncoder().encodeToString(it )}
+            logoImage = poster.logoImage?.let {  Base64.getEncoder().encodeToString(it )},
+            file = savedPosting.file?.let { Base64.getEncoder().encodeToString(it) }
         )
     }
 
@@ -142,6 +144,7 @@ class PostingService(
             applyDueDate = posting.applyDueDate,
             activityStartDate = posting.activityStartDate,
             activityEndDate = posting.activityEndDate,
+            file = posting.file?.let { Base64.getEncoder().encodeToString(it) }
         )
     }
 
