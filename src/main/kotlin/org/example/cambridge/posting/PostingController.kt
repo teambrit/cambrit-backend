@@ -20,39 +20,29 @@ class PostingController(
     private val postingService: PostingService,
     private val jwtUtils: JwtUtil
 ) {
-    @PostMapping("")
-    @Operation(summary = "공고 생성", description = "새로운 공고를 생성합니다. JSON 또는 multipart/form-data 모두 지원합니다.")
+    @PostMapping("", consumes = ["multipart/form-data"])
+    @Operation(summary = "공고 생성", description = "새로운 공고를 생성합니다.")
     fun createPosting(
-        @RequestBody(required = false) jsonRequest: CreatePostingRequest?,
-        @RequestPart("data", required = false) multipartRequest: CreatePostingRequest?,
+        @RequestPart("data") request: CreatePostingRequest,
         @RequestPart("file", required = false) file: MultipartFile?,
         @RequestHeader("Authorization") token: String
     ): ResponseEntity<PostingDetail>{
         val userId = jwtUtils.validateAndGetSubject(token.removePrefix("Bearer "))?.toLong()
             ?: return ResponseEntity.status(401).build()
-
-        val request = multipartRequest ?: jsonRequest
-            ?: return ResponseEntity.badRequest().build()
-
         val res = postingService.createPosting(userId, request, file?.bytes)
         return ResponseEntity.status(201).body(res)
     }
 
-    @PutMapping("/{id}")
-    @Operation(summary = "공고 수정", description = "자신이 작성한 공고를 수정합니다. JSON 또는 multipart/form-data 모두 지원합니다.")
+    @PutMapping("/{id}", consumes = ["multipart/form-data"])
+    @Operation(summary = "공고 수정", description = "자신이 작성한 공고를 수정합니다.")
     fun updatePosting(
         @PathVariable id: Long,
-        @RequestBody(required = false) jsonRequest: CreatePostingRequest?,
-        @RequestPart("data", required = false) multipartRequest: CreatePostingRequest?,
+        @RequestPart("data") request: CreatePostingRequest,
         @RequestPart("file", required = false) file: MultipartFile?,
         @RequestHeader("Authorization") token: String
     ): ResponseEntity<PostingDetail> {
         val userId = jwtUtils.validateAndGetSubject(token.removePrefix("Bearer "))?.toLong()
             ?: return ResponseEntity.status(401).build()
-
-        val request = multipartRequest ?: jsonRequest
-            ?: return ResponseEntity.badRequest().build()
-
         val res = postingService.updatePosting(id, userId, request, file?.bytes)
         return ResponseEntity.ok(res)
     }
