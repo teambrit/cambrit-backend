@@ -26,7 +26,7 @@ object AgentTools {
         Tool(
             function = FunctionDefinition(
                 name = "update_user_profile",
-                description = "사용자(학생) 프로필을 업데이트합니다. 이름, 전화번호, 자기소개를 수정할 수 있습니다.",
+                description = "사용자(학생) 프로필을 업데이트합니다. 이름, 전화번호, 자기소개, 은행 정보를 수정할 수 있습니다.",
                 parameters = FunctionParameter(
                     type = "object",
                     properties = mapOf(
@@ -41,6 +41,14 @@ object AgentTools {
                         "description" to PropertyDefinition(
                             type = "string",
                             description = "자기소개 (선택사항)"
+                        ),
+                        "bankNumber" to PropertyDefinition(
+                            type = "string",
+                            description = "계좌번호 (선택사항)"
+                        ),
+                        "bankCode" to PropertyDefinition(
+                            type = "string",
+                            description = "은행코드 (선택사항)"
                         )
                     ),
                     required = listOf("name")
@@ -50,7 +58,7 @@ object AgentTools {
         Tool(
             function = FunctionDefinition(
                 name = "update_company_profile",
-                description = "기업 프로필을 업데이트합니다. 회사명, 사업자번호, 홈페이지, 소개를 수정할 수 있습니다.",
+                description = "기업 프로필을 업데이트합니다. 회사명, 사업자번호, 홈페이지, 소개, 은행 정보를 수정할 수 있습니다.",
                 parameters = FunctionParameter(
                     type = "object",
                     properties = mapOf(
@@ -69,6 +77,14 @@ object AgentTools {
                         "description" to PropertyDefinition(
                             type = "string",
                             description = "회사 소개 (선택사항)"
+                        ),
+                        "bankNumber" to PropertyDefinition(
+                            type = "string",
+                            description = "계좌번호 (선택사항)"
+                        ),
+                        "bankCode" to PropertyDefinition(
+                            type = "string",
+                            description = "은행코드 (선택사항)"
                         )
                     ),
                     required = listOf("name")

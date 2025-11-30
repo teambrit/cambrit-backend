@@ -71,7 +71,9 @@ class UserService(
             description = user.description,
             companyUrl = user.companyUrl,
             companyCode = user.companyCode,
-            backgroundImage = if(user.backgroundImage != null) java.util.Base64.getEncoder().encodeToString(user.backgroundImage) else null
+            backgroundImage = if(user.backgroundImage != null) java.util.Base64.getEncoder().encodeToString(user.backgroundImage) else null,
+            bankNumber = user.bankNumber,
+            bankCode = user.bankCode
         )
     }
 
@@ -135,7 +137,9 @@ class UserService(
                 description = it.description,
                 companyUrl = null,
                 companyCode = null,
-                backgroundImage = null
+                backgroundImage = null,
+                bankNumber = it.bankNumber,
+                bankCode = it.bankCode
             )
         }
     }
@@ -173,13 +177,17 @@ class UserService(
         name: String,
         phoneNumber: String?,
         description: String?,
-        profileImage: ByteArray?
+        profileImage: ByteArray?,
+        bankNumber: String?,
+        bankCode: String?
     ) {
         val user = userRepository.findByIdOrNull(userId) ?: throw IllegalArgumentException("User not found")
 
         user.name = name
         user.phoneNumber = phoneNumber
         user.description = description
+        user.bankNumber = bankNumber
+        user.bankCode = bankCode
 
         if (profileImage != null) {
             user.profileImage = profileImage
@@ -196,7 +204,9 @@ class UserService(
         companyUrl: String?,
         description: String?,
         logoImage: ByteArray?,
-        backgroundImage: ByteArray?
+        backgroundImage: ByteArray?,
+        bankNumber: String?,
+        bankCode: String?
     ) {
         val user = userRepository.findByIdOrNull(userId) ?: throw IllegalArgumentException("User not found")
 
@@ -208,6 +218,8 @@ class UserService(
         user.companyCode = companyCode
         user.companyUrl = companyUrl
         user.description = description
+        user.bankNumber = bankNumber
+        user.bankCode = bankCode
 
         if (logoImage != null) {
             user.logoImage = logoImage

@@ -139,7 +139,9 @@ class UserController(
         @RequestParam("name") name: String,
         @RequestParam("phoneNumber", required = false) phoneNumber: String?,
         @RequestParam("description", required = false) description: String?,
-        @RequestParam("profileImage", required = false) profileImage: MultipartFile?
+        @RequestParam("profileImage", required = false) profileImage: MultipartFile?,
+        @RequestParam("bankNumber", required = false) bankNumber: String?,
+        @RequestParam("bankCode", required = false) bankCode: String?
     ): ResponseEntity<String> {
         val userId = jwtUtil.validateAndGetSubject(token.removePrefix("Bearer ")) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         userService.updateUserProfile(
@@ -147,7 +149,9 @@ class UserController(
             name = name,
             phoneNumber = phoneNumber,
             description = description,
-            profileImage = profileImage?.bytes
+            profileImage = profileImage?.bytes,
+            bankNumber = bankNumber,
+            bankCode = bankCode
         )
         return ResponseEntity.status(HttpStatus.OK).body("Profile updated successfully")
     }
@@ -162,7 +166,9 @@ class UserController(
         @RequestParam("companyUrl", required = false) companyUrl: String?,
         @RequestParam("description", required = false) description: String?,
         @RequestParam("logoImage", required = false) logoImage: MultipartFile?,
-        @RequestParam("backgroundImage", required = false) backgroundImage: MultipartFile?
+        @RequestParam("backgroundImage", required = false) backgroundImage: MultipartFile?,
+        @RequestParam("bankNumber", required = false) bankNumber: String?,
+        @RequestParam("bankCode", required = false) bankCode: String?
     ): ResponseEntity<String> {
         val userId = jwtUtil.validateAndGetSubject(token.removePrefix("Bearer ")) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         userService.updateCompanyProfile(
@@ -172,7 +178,9 @@ class UserController(
             companyUrl = companyUrl,
             description = description,
             logoImage = logoImage?.bytes,
-            backgroundImage = backgroundImage?.bytes
+            backgroundImage = backgroundImage?.bytes,
+            bankNumber = bankNumber,
+            bankCode = bankCode
         )
         return ResponseEntity.status(HttpStatus.OK).body("Company profile updated successfully")
     }

@@ -43,5 +43,9 @@ class User(
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "background_image", nullable = true, columnDefinition = "LONGBLOB")
-    var backgroundImage: ByteArray? = null
+    var backgroundImage: ByteArray? = null,
+    @Column(name = "bank_number", nullable = true)
+    var bankNumber: String? = null,
+    @Column(name = "bank_code", nullable = true)
+    var bankCode: String? = null
 )

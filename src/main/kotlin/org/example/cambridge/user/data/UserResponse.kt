@@ -19,5 +19,7 @@ data class UserResponse(
     val description: String? = null,
     val companyUrl: String? = null,
     val companyCode: String? = null,
-    val backgroundImage: String? = null
+    val backgroundImage: String? = null,
+    val bankNumber: String? = null,
+    val bankCode: String? = null
 )
