@@ -18,17 +18,17 @@ class Posting(
 
     // MySQL TEXT 컬럼 매핑
     @Column(columnDefinition = "TEXT", nullable = false)
-    val title: String = "",
+    var title: String = "",
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    val body: String = "",
+    var body: String = "",
 
     @Column(nullable = false)
-    val compensation: Long = 0L,
+    var compensation: Long = 0L,
 
     @Column(length = 255, nullable = false)
     @Enumerated(EnumType.STRING)
-    val status: PostingStatus = PostingStatus.ACTIVE,
+    var status: PostingStatus = PostingStatus.ACTIVE,
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -36,10 +36,10 @@ class Posting(
 
     @UpdateTimestamp
     @Column(name = "last_modified_at", nullable = false)
-    val lastModifiedAt: LocalDateTime? = null,
+    var lastModifiedAt: LocalDateTime? = null,
 
-    val applyDueDate: LocalDate? = null,
-    val activityStartDate: LocalDate? = null,
-    val activityEndDate: LocalDate? = null,
-    val tags: String? = null
+    var applyDueDate: LocalDate? = null,
+    var activityStartDate: LocalDate? = null,
+    var activityEndDate: LocalDate? = null,
+    var tags: String? = null
 )
