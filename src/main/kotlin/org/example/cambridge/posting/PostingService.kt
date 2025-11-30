@@ -63,6 +63,66 @@ class PostingService(
         )
     }
 
+    @Transactional
+    fun updatePosting(postingId: Long, userId: Long, postingRequest: CreatePostingRequest): PostingDetail {
+        val posting = postingRepository.findByIdOrNull(postingId)
+            ?: throw IllegalArgumentException("No posting with id $postingId")
+
+        if (posting.posterId != userId) {
+            throw IllegalArgumentException("User with id $userId is not the poster of posting with id $postingId")
+        }
+
+        posting.title = postingRequest.title
+        posting.body = postingRequest.body
+        posting.compensation = postingRequest.compensation
+        posting.tags = postingRequest.tags.toString()
+        posting.applyDueDate = postingRequest.applyDueDate
+        posting.activityStartDate = postingRequest.activityStartDate
+        posting.activityEndDate = postingRequest.activityEndDate
+        posting.lastModifiedAt = LocalDateTime.now()
+
+        val savedPosting = postingRepository.save(posting)
+
+        val poster = userRepository.findByIdOrNull(userId)
+            ?: throw IllegalArgumentException("No user with id $userId")
+
+        return PostingDetail(
+            id = savedPosting.id,
+            title = savedPosting.title,
+            body = savedPosting.body,
+            posterId = poster.id,
+            posterName = poster.name,
+            posterEmail = poster.email,
+            tags = savedPosting.tags?.split(",")?.map { it.trim().removePrefix("[").removeSuffix("]") } ?: emptyList(),
+            compensation = savedPosting.compensation,
+            status = savedPosting.status,
+            createdAt = savedPosting.createdAt,
+            lastModifiedAt = savedPosting.lastModifiedAt,
+            applyDueDate = savedPosting.applyDueDate,
+            activityStartDate = savedPosting.activityStartDate,
+            activityEndDate = savedPosting.activityEndDate,
+            logoImage = poster.logoImage?.let {  Base64.getEncoder().encodeToString(it )}
+        )
+    }
+
+    @Transactional
+    fun deletePosting(postingId: Long, userId: Long) {
+        val posting = postingRepository.findByIdOrNull(postingId)
+            ?: throw IllegalArgumentException("No posting with id $postingId")
+
+        if (posting.posterId != userId) {
+            throw IllegalArgumentException("User with id $userId is not the poster of posting with id $postingId")
+        }
+
+        // 지원자가 있는지 확인
+        val applications = applicationRepository.findAllByPostingId(postingId)
+        if (applications.isNotEmpty()) {
+            throw IllegalArgumentException("Cannot delete posting with existing applications")
+        }
+
+        postingRepository.delete(posting)
+    }
+
     fun getDetail(postingId: Long): PostingDetail? {
         val posting = postingRepository.findByIdOrNull(postingId) ?: return null
         val poster = userRepository.findByIdOrNull(posting.posterId) ?: throw IllegalArgumentException("No user with id ${posting.posterId}")

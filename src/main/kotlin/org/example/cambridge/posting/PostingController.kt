@@ -32,6 +32,30 @@ class PostingController(
         return ResponseEntity.status(201).body(res)
     }
 
+    @PutMapping("/{id}")
+    @Operation(summary = "공고 수정", description = "자신이 작성한 공고를 수정합니다.")
+    fun updatePosting(
+        @PathVariable id: Long,
+        @RequestBody request: CreatePostingRequest,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<PostingDetail> {
+        val userId = jwtUtils.validateAndGetSubject(token.removePrefix("Bearer "))?.toLong()
+            ?: return ResponseEntity.status(401).build()
+        val res = postingService.updatePosting(id, userId, request)
+        return ResponseEntity.ok(res)
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "공고 삭제", description = "자신이 작성한 공고를 삭제합니다. (지원자가 없는 경우만 가능)")
+    fun deletePosting(
+        @PathVariable id: Long,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<String> {
+        val userId = jwtUtils.validateAndGetSubject(token.removePrefix("Bearer "))?.toLong()
+            ?: return ResponseEntity.status(401).build()
+        postingService.deletePosting(id, userId)
+        return ResponseEntity.ok("Posting deleted successfully")
+    }
 
     @GetMapping("/{id}")
     @Operation(summary = "공고 상세 조회", description = "특정 공고의 상세 정보를 조회합니다.")
