@@ -23,13 +23,7 @@ class PostingController(
     @PostMapping("", consumes = ["multipart/form-data"])
     @Operation(summary = "공고 생성", description = "새로운 공고를 생성합니다.")
     fun createPosting(
-        @RequestPart(value = "data", required = true)
-        @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            content = [io.swagger.v3.oas.annotations.media.Content(
-                mediaType = "application/json"
-            )]
-        )
-        request: CreatePostingRequest,
+        @RequestPart("data") request: CreatePostingRequest,
         @RequestPart("file", required = false) file: MultipartFile?,
         @RequestHeader("Authorization") token: String
     ): ResponseEntity<PostingDetail>{
@@ -43,13 +37,7 @@ class PostingController(
     @Operation(summary = "공고 수정", description = "자신이 작성한 공고를 수정합니다.")
     fun updatePosting(
         @PathVariable id: Long,
-        @RequestPart(value = "data", required = true)
-        @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            content = [io.swagger.v3.oas.annotations.media.Content(
-                mediaType = "application/json"
-            )]
-        )
-        request: CreatePostingRequest,
+        @RequestPart("data") request: CreatePostingRequest,
         @RequestPart("file", required = false) file: MultipartFile?,
         @RequestHeader("Authorization") token: String
     ): ResponseEntity<PostingDetail> {
