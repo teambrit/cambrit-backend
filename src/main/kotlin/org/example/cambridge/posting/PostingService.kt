@@ -169,10 +169,11 @@ class PostingService(
 
         val userMap = userRepository.findAllById(page.content.map { it.posterId }).associateBy { it.id }
 
-        // 각 공고의 지원자 수를 계산
-        val applicantCountMap = page.content.associate { posting ->
-            posting.id to applicationRepository.findAllByPostingId(posting.id).size
-        }
+        // 한 번의 쿼리로 모든 공고의 지원자 정보를 조회하고 메모리에서 그룹핑
+        val postingIds = page.content.map { it.id }
+        val applicantCountMap = applicationRepository.findAllByPostingIdIn(postingIds)
+            .groupBy { it.postingId }
+            .mapValues { it.value.size }
 
         return page.map { PostingDetail(it, userMap[it.posterId]!!, applicantCountMap[it.id] ?: 0) }
     }
