@@ -46,6 +46,6 @@ class User(
     var backgroundImage: ByteArray? = null,
     @Column(name = "bank_number", nullable = true)
     var bankNumber: String? = null,
-    @Column(name = "bank_code", nullable = true)
-    var bankCode: String? = null
+    @Column(name = "bank_name", nullable = true)
+    var bankName: String? = null
 )

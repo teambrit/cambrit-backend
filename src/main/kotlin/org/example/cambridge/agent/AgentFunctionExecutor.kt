@@ -107,7 +107,7 @@ class AgentFunctionExecutor(
                         description = args.description,
                         profileImage = null, // 이미지는 agent에서 수정 불가
                         bankNumber = args.bankNumber,
-                        bankCode = args.bankCode
+                        bankName = args.bankName
                     )
                     objectMapper.writeValueAsString(mapOf("success" to true, "message" to "프로필이 업데이트되었습니다."))
                 }
@@ -122,7 +122,7 @@ class AgentFunctionExecutor(
                         logoImage = null,
                         backgroundImage = null,
                         bankNumber = args.bankNumber,
-                        bankCode = args.bankCode
+                        bankName = args.bankName
                     )
                     objectMapper.writeValueAsString(mapOf("success" to true, "message" to "회사 프로필이 업데이트되었습니다."))
                 }
@@ -168,8 +168,8 @@ data class GetPostingDetailArgs(val postingId: Long)
 data class FilterPostingsArgs(val postingIds: List<Long>)
 data class GetApplicationsArgs(val postingId: Long)
 data class GetBillingDetailArgs(val billingId: Long)
-data class UpdateUserProfileArgs(val name: String, val phoneNumber: String?, val description: String?, val bankNumber: String?, val bankCode: String?)
-data class UpdateCompanyProfileArgs(val name: String, val companyCode: String?, val companyUrl: String?, val description: String?, val bankNumber: String?, val bankCode: String?)
+data class UpdateUserProfileArgs(val name: String, val phoneNumber: String?, val description: String?, val bankNumber: String?, val bankName: String?)
+data class UpdateCompanyProfileArgs(val name: String, val companyCode: String?, val companyUrl: String?, val description: String?, val bankNumber: String?, val bankName: String?)
 data class CreatePostingArgs(val title: String, val body: String, val compensation: Long, val tags: String?)
 data class ApplyToPostingArgs(val postingId: Long)
 data class UpdateApplicationStatusArgs(val applicationId: Long, val status: String)

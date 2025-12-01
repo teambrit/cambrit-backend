@@ -46,9 +46,9 @@ object AgentTools {
                             type = "string",
                             description = "계좌번호 (선택사항)"
                         ),
-                        "bankCode" to PropertyDefinition(
+                        "bankName" to PropertyDefinition(
                             type = "string",
-                            description = "은행코드 (선택사항)"
+                            description = "은행명 (선택사항)"
                         )
                     ),
                     required = listOf("name")
@@ -82,9 +82,9 @@ object AgentTools {
                             type = "string",
                             description = "계좌번호 (선택사항)"
                         ),
-                        "bankCode" to PropertyDefinition(
+                        "bankName" to PropertyDefinition(
                             type = "string",
-                            description = "은행코드 (선택사항)"
+                            description = "은행명 (선택사항)"
                         )
                     ),
                     required = listOf("name")

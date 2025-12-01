@@ -141,7 +141,7 @@ class UserController(
         @RequestParam("description", required = false) description: String?,
         @RequestParam("profileImage", required = false) profileImage: MultipartFile?,
         @RequestParam("bankNumber", required = false) bankNumber: String?,
-        @RequestParam("bankCode", required = false) bankCode: String?
+        @RequestParam("bankName", required = false) bankName: String?
     ): ResponseEntity<String> {
         val userId = jwtUtil.validateAndGetSubject(token.removePrefix("Bearer ")) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         userService.updateUserProfile(
@@ -151,7 +151,7 @@ class UserController(
             description = description,
             profileImage = profileImage?.bytes,
             bankNumber = bankNumber,
-            bankCode = bankCode
+            bankName = bankName
         )
         return ResponseEntity.status(HttpStatus.OK).body("Profile updated successfully")
     }
@@ -168,7 +168,7 @@ class UserController(
         @RequestParam("logoImage", required = false) logoImage: MultipartFile?,
         @RequestParam("backgroundImage", required = false) backgroundImage: MultipartFile?,
         @RequestParam("bankNumber", required = false) bankNumber: String?,
-        @RequestParam("bankCode", required = false) bankCode: String?
+        @RequestParam("bankName", required = false) bankName: String?
     ): ResponseEntity<String> {
         val userId = jwtUtil.validateAndGetSubject(token.removePrefix("Bearer ")) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         userService.updateCompanyProfile(
@@ -180,7 +180,7 @@ class UserController(
             logoImage = logoImage?.bytes,
             backgroundImage = backgroundImage?.bytes,
             bankNumber = bankNumber,
-            bankCode = bankCode
+            bankName = bankName
         )
         return ResponseEntity.status(HttpStatus.OK).body("Company profile updated successfully")
     }

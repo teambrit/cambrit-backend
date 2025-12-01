@@ -73,7 +73,7 @@ class UserService(
             companyCode = user.companyCode,
             backgroundImage = if(user.backgroundImage != null) java.util.Base64.getEncoder().encodeToString(user.backgroundImage) else null,
             bankNumber = user.bankNumber,
-            bankCode = user.bankCode
+            bankName = user.bankName
         )
     }
 
@@ -139,7 +139,7 @@ class UserService(
                 companyCode = null,
                 backgroundImage = null,
                 bankNumber = it.bankNumber,
-                bankCode = it.bankCode
+                bankName = it.bankName
             )
         }
     }
@@ -179,7 +179,7 @@ class UserService(
         description: String?,
         profileImage: ByteArray?,
         bankNumber: String?,
-        bankCode: String?
+        bankName: String?
     ) {
         val user = userRepository.findByIdOrNull(userId) ?: throw IllegalArgumentException("User not found")
 
@@ -187,7 +187,7 @@ class UserService(
         user.phoneNumber = phoneNumber
         user.description = description
         user.bankNumber = bankNumber
-        user.bankCode = bankCode
+        user.bankName = bankName
 
         if (profileImage != null) {
             user.profileImage = profileImage
@@ -206,7 +206,7 @@ class UserService(
         logoImage: ByteArray?,
         backgroundImage: ByteArray?,
         bankNumber: String?,
-        bankCode: String?
+        bankName: String?
     ) {
         val user = userRepository.findByIdOrNull(userId) ?: throw IllegalArgumentException("User not found")
 
@@ -219,7 +219,7 @@ class UserService(
         user.companyUrl = companyUrl
         user.description = description
         user.bankNumber = bankNumber
-        user.bankCode = bankCode
+        user.bankName = bankName
 
         if (logoImage != null) {
             user.logoImage = logoImage
