@@ -61,7 +61,8 @@ class PostingService(
             activityStartDate = savedPosting.activityStartDate,
             activityEndDate = savedPosting.activityEndDate,
             logoImage = poster.logoImage?.let {  Base64.getEncoder().encodeToString(it )},
-            file = savedPosting.file?.let { Base64.getEncoder().encodeToString(it) }
+            file = savedPosting.file?.let { Base64.getEncoder().encodeToString(it) },
+            applicantCount = 0
         )
     }
 
@@ -93,6 +94,8 @@ class PostingService(
         val poster = userRepository.findByIdOrNull(userId)
             ?: throw IllegalArgumentException("No user with id $userId")
 
+        val applicantCount = applicationRepository.findAllByPostingId(postingId).size
+
         return PostingDetail(
             id = savedPosting.id,
             title = savedPosting.title,
@@ -109,7 +112,8 @@ class PostingService(
             activityStartDate = savedPosting.activityStartDate,
             activityEndDate = savedPosting.activityEndDate,
             logoImage = poster.logoImage?.let {  Base64.getEncoder().encodeToString(it )},
-            file = savedPosting.file?.let { Base64.getEncoder().encodeToString(it) }
+            file = savedPosting.file?.let { Base64.getEncoder().encodeToString(it) },
+            applicantCount = applicantCount
         )
     }
 
@@ -134,6 +138,7 @@ class PostingService(
     fun getDetail(postingId: Long): PostingDetail? {
         val posting = postingRepository.findByIdOrNull(postingId) ?: return null
         val poster = userRepository.findByIdOrNull(posting.posterId) ?: throw IllegalArgumentException("No user with id ${posting.posterId}")
+        val applicantCount = applicationRepository.findAllByPostingId(postingId).size
         return PostingDetail(
             id = posting.id,
             title = posting.title,
@@ -150,7 +155,8 @@ class PostingService(
             applyDueDate = posting.applyDueDate,
             activityStartDate = posting.activityStartDate,
             activityEndDate = posting.activityEndDate,
-            file = posting.file?.let { Base64.getEncoder().encodeToString(it) }
+            file = posting.file?.let { Base64.getEncoder().encodeToString(it) },
+            applicantCount = applicantCount
         )
     }
 
@@ -163,7 +169,12 @@ class PostingService(
 
         val userMap = userRepository.findAllById(page.content.map { it.posterId }).associateBy { it.id }
 
-        return page.map { PostingDetail(it,userMap[it.posterId]!!) }
+        // 각 공고의 지원자 수를 계산
+        val applicantCountMap = page.content.associate { posting ->
+            posting.id to applicationRepository.findAllByPostingId(posting.id).size
+        }
+
+        return page.map { PostingDetail(it, userMap[it.posterId]!!, applicantCountMap[it.id] ?: 0) }
     }
 
     fun applyToPosting(userId: Long, postingId: Long) {

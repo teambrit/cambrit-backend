@@ -23,9 +23,10 @@ data class PostingDetail (
     val activityStartDate: LocalDate?,
     val activityEndDate: LocalDate?,
     val tags: List<String>,
-    val file: String?
+    val file: String?,
+    val applicantCount: Int
 ){
-    constructor(posting: Posting, poster: User): this(
+    constructor(posting: Posting, poster: User, applicantCount: Int): this(
         id = posting.id,
         title = posting.title,
         body = posting.body,
@@ -41,6 +42,7 @@ data class PostingDetail (
         applyDueDate = posting.applyDueDate,
         activityStartDate = posting.activityStartDate,
         activityEndDate = posting.activityEndDate,
-        file = posting.file?.let { java.util.Base64.getEncoder().encodeToString(it) }
+        file = posting.file?.let { java.util.Base64.getEncoder().encodeToString(it) },
+        applicantCount = applicantCount
     )
 }
