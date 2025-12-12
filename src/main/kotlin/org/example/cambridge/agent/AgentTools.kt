@@ -339,9 +339,13 @@ get_posting_list로 조회한 후 조건에 맞는 항목을 찾았다면, 해�
                 parameters = FunctionParameter(
                     type = "object",
                     properties = mapOf(
-                        "applicationId" to PropertyDefinition(
+                        "postingId" to PropertyDefinition(
                             type = "number",
-                            description = "지원 내역 ID"
+                            description = "공고 ID"
+                        ),
+                        "applicantIdentifier" to PropertyDefinition(
+                            type = "string",
+                            description = "지원자 이메일 또는 이름"
                         ),
                         "status" to PropertyDefinition(
                             type = "string",
@@ -349,7 +353,7 @@ get_posting_list로 조회한 후 조건에 맞는 항목을 찾았다면, 해�
                             enum = listOf("PENDING", "APPROVED", "REJECTED", "VERIFIED")
                         )
                     ),
-                    required = listOf("applicationId", "status")
+                    required = listOf("postingId", "applicantIdentifier", "status")
                 )
             )
         )

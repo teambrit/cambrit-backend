@@ -180,8 +180,42 @@ class AgentFunctionExecutor(
                 "update_application_status" -> {
                     val args = objectMapper.readValue(argumentsJson, UpdateApplicationStatusArgs::class.java)
                     val status = org.example.cambridge.posting.ApplicationStatus.valueOf(args.status)
-                    postingService.updateApplicationStatus(args.applicationId, status, currentUserId)
-                    objectMapper.writeValueAsString(mapOf("success" to true, "message" to "지원 상태가 변경되었습니다."))
+
+                    // 공고 확인 및 권한 검증
+                    val posting = postingService.getDetail(args.postingId)
+                        ?: throw IllegalArgumentException("공고를 찾을 수 없습니다.")
+
+                    if (posting.posterId != currentUserId) {
+                        throw IllegalArgumentException("자신의 공고에만 지원자 상태를 변경할 수 있습니다.")
+                    }
+
+                    // 해당 공고의 지원자 목록 조회
+                    val applications = postingService.getApplicationsByPosting(args.postingId, currentUserId)
+
+                    // applicantIdentifier로 지원자 찾기 (이메일 또는 이름으로 검색)
+                    val identifier = args.applicantIdentifier.lowercase()
+                    val matchedApplications = applications.filter { app ->
+                        app.applicantEmail.lowercase().contains(identifier) ||
+                        app.applicantName.lowercase().contains(identifier)
+                    }
+
+                    when {
+                        matchedApplications.isEmpty() -> {
+                            throw IllegalArgumentException("'${args.applicantIdentifier}'와 일치하는 지원자를 찾을 수 없습니다.")
+                        }
+                        matchedApplications.size > 1 -> {
+                            val names = matchedApplications.joinToString(", ") { "${it.applicantName}(${it.applicantEmail})" }
+                            throw IllegalArgumentException("여러 명의 지원자가 일치합니다: $names. 더 구체적으로 입력해주세요.")
+                        }
+                        else -> {
+                            val application = matchedApplications.first()
+                            postingService.updateApplicationStatus(application.id, status, currentUserId)
+                            objectMapper.writeValueAsString(mapOf(
+                                "success" to true,
+                                "message" to "${application.applicantName}(${application.applicantEmail})님의 지원 상태가 ${args.status}로 변경되었습니다."
+                            ))
+                        }
+                    }
                 }
                 else -> {
                     objectMapper.writeValueAsString(mapOf("error" to "Unknown function: $functionName"))
@@ -206,4 +240,4 @@ data class CreatePostingArgs(val title: String, val body: String, val compensati
 data class UpdatePostingArgs(val postingId: Long, val title: String, val body: String, val compensation: Long, val tags: String?)
 data class DeletePostingArgs(val postingId: Long)
 data class ApplyToPostingArgs(val postingId: Long)
-data class UpdateApplicationStatusArgs(val applicationId: Long, val status: String)
+data class UpdateApplicationStatusArgs(val postingId: Long, val applicantIdentifier: String, val status: String)
