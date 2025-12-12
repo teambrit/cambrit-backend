@@ -147,6 +147,25 @@ class AgentFunctionExecutor(
                     val posting = postingService.createPosting(currentUserId, request)
                     removeImageFields(posting) as String
                 }
+                "update_posting" -> {
+                    val args = objectMapper.readValue(argumentsJson, UpdatePostingArgs::class.java)
+                    val request = org.example.cambridge.posting.data.CreatePostingRequest(
+                        title = args.title,
+                        body = args.body,
+                        compensation = args.compensation,
+                        tags = args.tags?.split(",")?.map { it.trim() } ?: emptyList(),
+                        applyDueDate = null,
+                        activityStartDate = null,
+                        activityEndDate = null
+                    )
+                    val posting = postingService.updatePosting(args.postingId, currentUserId, request)
+                    removeImageFields(posting) as String
+                }
+                "delete_posting" -> {
+                    val args = objectMapper.readValue(argumentsJson, DeletePostingArgs::class.java)
+                    postingService.deletePosting(args.postingId, currentUserId)
+                    objectMapper.writeValueAsString(mapOf("success" to true, "message" to "공고가 삭제되었습니다."))
+                }
                 "apply_to_posting" -> {
                     val args = objectMapper.readValue(argumentsJson, ApplyToPostingArgs::class.java)
                     postingService.applyToPosting(currentUserId, args.postingId)
@@ -178,5 +197,7 @@ data class GetBillingDetailArgs(val billingId: Long)
 data class UpdateUserProfileArgs(val name: String, val phoneNumber: String?, val description: String?, val bankNumber: String?, val bankName: String?)
 data class UpdateCompanyProfileArgs(val name: String, val companyCode: String?, val companyUrl: String?, val description: String?, val bankNumber: String?, val bankName: String?)
 data class CreatePostingArgs(val title: String, val body: String, val compensation: Long, val tags: String?)
+data class UpdatePostingArgs(val postingId: Long, val title: String, val body: String, val compensation: Long, val tags: String?)
+data class DeletePostingArgs(val postingId: Long)
 data class ApplyToPostingArgs(val postingId: Long)
 data class UpdateApplicationStatusArgs(val applicationId: Long, val status: String)

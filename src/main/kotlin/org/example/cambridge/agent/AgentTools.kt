@@ -270,6 +270,54 @@ get_posting_list로 조회한 후 조건에 맞는 항목을 찾았다면, 해�
         ),
         Tool(
             function = FunctionDefinition(
+                name = "update_posting",
+                description = "기존 공고를 수정합니다. (기업 전용, 자신이 작성한 공고만 수정 가능)",
+                parameters = FunctionParameter(
+                    type = "object",
+                    properties = mapOf(
+                        "postingId" to PropertyDefinition(
+                            type = "number",
+                            description = "수정할 공고의 ID"
+                        ),
+                        "title" to PropertyDefinition(
+                            type = "string",
+                            description = "공고 제목"
+                        ),
+                        "body" to PropertyDefinition(
+                            type = "string",
+                            description = "공고 내용"
+                        ),
+                        "compensation" to PropertyDefinition(
+                            type = "number",
+                            description = "보상금 (원 단위)"
+                        ),
+                        "tags" to PropertyDefinition(
+                            type = "string",
+                            description = "태그 (쉼표로 구분, 예: 'IT,개발,백엔드')"
+                        )
+                    ),
+                    required = listOf("postingId", "title", "body", "compensation")
+                )
+            )
+        ),
+        Tool(
+            function = FunctionDefinition(
+                name = "delete_posting",
+                description = "공고를 삭제합니다. (기업 전용, 자신이 작성한 공고만 삭제 가능. 지원자가 있는 공고는 삭제할 수 없습니다)",
+                parameters = FunctionParameter(
+                    type = "object",
+                    properties = mapOf(
+                        "postingId" to PropertyDefinition(
+                            type = "number",
+                            description = "삭제할 공고의 ID"
+                        )
+                    ),
+                    required = listOf("postingId")
+                )
+            )
+        ),
+        Tool(
+            function = FunctionDefinition(
                 name = "apply_to_posting",
                 description = "특정 공고에 지원합니다. (학생 전용)",
                 parameters = FunctionParameter(
