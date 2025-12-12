@@ -24,12 +24,19 @@ class AgentFunctionExecutor(
     private fun removeImageFieldsRecursive(node: com.fasterxml.jackson.databind.JsonNode) {
         if (node.isObject) {
             val objectNode = node as com.fasterxml.jackson.databind.node.ObjectNode
-            // 이미지 관련 필드 제거
+            // 이미지 및 파일 관련 필드 제거 (Base64 데이터가 매우 클 수 있음)
             objectNode.remove("profileImage")
             objectNode.remove("logoImage")
             objectNode.remove("backgroundImage")
             objectNode.remove("verificationFile")
             objectNode.remove("applicantProfileImage")
+            // 추가로 다른 이름으로 된 이미지 필드도 제거
+            objectNode.remove("image")
+            objectNode.remove("logo")
+            objectNode.remove("thumbnail")
+            objectNode.remove("photo")
+            objectNode.remove("file")
+            objectNode.remove("attachment")
 
             // 자식 노드들도 재귀적으로 처리
             objectNode.fields().forEach { (_, value) ->
