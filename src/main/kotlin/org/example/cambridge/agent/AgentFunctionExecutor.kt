@@ -60,7 +60,13 @@ class AgentFunctionExecutor(
                     val args = objectMapper.readValue(argumentsJson, GetPostingListArgs::class.java)
                     val page = args.page ?: 0
                     val size = args.size ?: 20
-                    val posterId = args.posterId
+                    // 기업 회원은 자동으로 자신의 공고만 조회
+                    val currentUser = userService.getUserById(currentUserId)
+                    val posterId = if (currentUser.role == org.example.cambridge.user.UserRole.COMPANY) {
+                        currentUserId
+                    } else {
+                        args.posterId
+                    }
                     val postings = postingService.getPosterPage(PageRequest.of(page, size), posterId)
                     removeImageFields(postings) as String
                 }
